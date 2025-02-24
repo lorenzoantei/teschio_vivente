@@ -18,7 +18,7 @@ void setup() {
   kinect.init();
   
   println(Serial.list());
-  String portName = Serial.list()[2];
+  String portName = Serial.list()[0];
   myPort = new Serial(this, portName, 115200);
   println("Arduino connesso su: " + portName);
   
@@ -57,17 +57,16 @@ void draw() {
   fill(255, 0, 0);
   textAlign(LEFT, TOP);
   textSize(height * 0.1);
-
-  float textY = 40;
-  for (int i = 0; i < skeletons.size(); i++) {
-    KSkeleton sk = skeletons.get(i);
+  
+  // Se è presente almeno uno scheletro, prendi il primo
+  if (skeletons.size() > 0) {
+    KSkeleton sk = skeletons.get(0);
     if (sk.isTracked()) {
       KJoint spineMid = sk.getJoints()[KinectPV2.JointType_SpineMid];
-      float xVal = spineMid.getX(); // in metri, relativo al sensore Kinect
-      
-      //text("Skeleton " + i + " - X: " + nf(xVal, 1, 3), 20, textY);
-      text(i + " " + nf(xVal, 1, 3), 40, textY);
-      textY += textAscent() + textDescent() + 40;
+      float xVal = spineMid.getX(); // coordinata X in metri
+  
+      // Visualizza il valore sullo schermo (opzionale)
+      text("0 " + nf(xVal, 1, 3), 40, 40);
       
       float minX = -1.0; 
       float maxX =  1.0;
@@ -77,7 +76,6 @@ void draw() {
       
       int servoPos = int(mappedVal);
       myPort.write(servoPos + "\n");
-      
     }
   }
 }
